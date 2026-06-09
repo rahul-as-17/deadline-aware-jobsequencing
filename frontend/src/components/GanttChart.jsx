@@ -1,4 +1,4 @@
-const COLORS = ['#6366f1','#10b981','#f59e0b','#f43f5e','#06b6d4','#a855f7','#f97316','#84cc16','#ec4899','#14b8a6','#8b5cf6','#eab308'];
+const COLORS = ['#2563eb','#059669','#d97706','#dc2626','#0891b2','#7c3aed','#ea580c','#65a30d','#db2777','#0d9488','#6d28d9','#ca8a04'];
 
 export default function GanttChart({ scheduledJobs, allJobs }) {
   if (!scheduledJobs || !scheduledJobs.length) {

@@ -4,7 +4,7 @@ import { generateJobs, compareAll } from '../api.js';
 import GanttChart from '../components/GanttChart.jsx';
 import SummaryTable from '../components/SummaryTable.jsx';
 
-const COLORS = ['#6366f1','#10b981','#f59e0b','#f43f5e','#06b6d4','#a855f7','#f97316','#84cc16'];
+const COLORS = ['#2563eb','#059669','#d97706','#dc2626','#0891b2','#7c3aed','#ea580c','#65a30d'];
 
 const emptyJob = () => ({ id: Date.now(), deadline: 8, duration: 2, profit: 50, penalty: 20, arrival_time: 0 });
 
@@ -20,7 +20,7 @@ export default function Scheduler({ addToast, modelReady }) {
     setLoading(true);
     try {
       const data = await generateJobs(genCount, genDeadline);
-      setJobs(data.jobs);
+      setJobs(data.jobs.map(j => ({ ...j, arrival_time: 0 })));
       setResults(null);
       addToast(`Generated ${data.count} jobs`, 'success');
     } catch {

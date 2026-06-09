@@ -121,7 +121,7 @@ def extract_features(job: Dict, all_jobs: List[Dict]) -> List[float]:
 
 
 def generate_training_data(
-    n_samples: int = 2000,
+    n_samples: int = 10000,
     min_jobs: int = 4,
     max_jobs: int = 8,
     max_deadline: int = 10,

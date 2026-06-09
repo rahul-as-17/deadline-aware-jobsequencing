@@ -25,13 +25,13 @@ export default function SummaryTable({ summary }) {
         </thead>
         <tbody>
           {entries.map(([algo, s]) => (
-            <tr key={algo} style={s.net_profit === bestNet ? { background: 'rgba(99,102,241,0.06)' } : {}}>
+            <tr key={algo} style={s.net_profit === bestNet ? { background: 'rgba(37,99,235,0.04)' } : {}}>
               <td>
                 <span className={`algo-badge ${BADGE_CLS[algo] || ''}`}>
                   {ALGO_LABELS[algo] || algo}
                 </span>
                 {s.net_profit === bestNet && (
-                  <span style={{ marginLeft: 6, fontSize: '0.65rem', color: 'var(--amber-light)' }}>★ best</span>
+                  <span style={{ marginLeft: 6, fontSize: '0.65rem', color: 'var(--amber)' }}>BEST</span>
                 )}
               </td>
               <td className="mono" style={{ fontWeight: 700, color: s.net_profit >= 0 ? 'var(--emerald-light)' : 'var(--rose-light)' }}>

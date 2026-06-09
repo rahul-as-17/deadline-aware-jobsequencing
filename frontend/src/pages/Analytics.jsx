@@ -66,13 +66,13 @@ export default function Analytics({ addToast, modelReady }) {
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="Train Loss" stroke="#6366f1" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="Val Loss" stroke="#f43f5e" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="Train Loss" stroke="#2563eb" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="Val Loss" stroke="#dc2626" strokeWidth={2} dot={false} />
                 {/* Best epoch marker */}
                 {bestEpoch && (
                   <Line type="monotone" dataKey="Val Loss" stroke="transparent" dot={(props) => {
                     if (props.index + 1 === bestEpoch)
-                      return <circle key={props.index} cx={props.cx} cy={props.cy} r={5} fill="#10b981" stroke="#fff" strokeWidth={2} />;
+                      return <circle key={props.index} cx={props.cx} cy={props.cy} r={5} fill="#059669" stroke="#fff" strokeWidth={2} />;
                     return null;
                   }} />
                 )}
@@ -91,8 +91,8 @@ export default function Analytics({ addToast, modelReady }) {
                 <YAxis tick={{ fontSize: 11 }} unit="%" domain={['auto', 'auto']} />
                 <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area type="monotone" dataKey="Train Acc" stroke="#10b981" fill="#10b981" fillOpacity={0.08} strokeWidth={2} />
-                <Area type="monotone" dataKey="Val Acc" stroke="#06b6d4" fill="#06b6d4" fillOpacity={0.08} strokeWidth={2} />
+                <Area type="monotone" dataKey="Train Acc" stroke="#059669" fill="#059669" fillOpacity={0.08} strokeWidth={2} />
+                <Area type="monotone" dataKey="Val Acc" stroke="#0891b2" fill="#0891b2" fillOpacity={0.08} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -106,7 +106,7 @@ export default function Analytics({ addToast, modelReady }) {
                 <XAxis dataKey="epoch" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
-                <Area type="monotone" dataKey="Generalization Gap" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.1} strokeWidth={2} />
+                <Area type="monotone" dataKey="Generalization Gap" stroke="#d97706" fill="#d97706" fillOpacity={0.06} strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>

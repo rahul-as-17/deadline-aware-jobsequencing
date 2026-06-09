@@ -101,7 +101,7 @@ export default function TrainAI({ addToast, onModelTrained }) {
           <div className="card-title"><Database size={14} /> Training Results</div>
           <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
             {[
-              { label: 'Status', value: result.status === 'success' ? '✓ Success' : '✗ Failed', cls: 'stat-profit' },
+              { label: 'Status', value: result.status === 'success' ? 'Success' : 'Failed', cls: 'stat-profit' },
               { label: 'Training Rows', value: result.training_rows?.toLocaleString(), cls: 'stat-net' },
               { label: 'Train Accuracy', value: `${(result.final_train_acc * 100).toFixed(1)}%`, cls: 'stat-util' },
               { label: 'Val Accuracy', value: `${(result.final_val_acc * 100).toFixed(1)}%`, cls: 'stat-penalty' },

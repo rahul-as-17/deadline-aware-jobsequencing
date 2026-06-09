@@ -7,7 +7,7 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 
-const COLORS = ['#10b981','#f43f5e','#f59e0b','#06b6d4','#a855f7'];
+const COLORS = ['#059669','#dc2626','#d97706','#0891b2','#2563eb'];
 const ALGO_LABELS = {
   greedy: 'Greedy', bruteforce: 'Brute Force', bruteforce_optimal: 'Brute Force',
   dynamic: 'Dynamic', dynamic_programming: 'Dynamic',
@@ -132,10 +132,10 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
                 {/* Radar */}
                 <ResponsiveContainer width="100%" height={260}>
                   <RadarChart data={accRadar}>
-                    <PolarGrid stroke="rgba(255,255,255,0.08)" />
+                    <PolarGrid stroke="rgba(0,0,0,0.08)" />
                     <PolarAngleAxis dataKey="metric" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
                     <PolarRadiusAxis domain={[0, 100]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
-                    <Radar dataKey="score" stroke="#a855f7" fill="#a855f7" fillOpacity={0.2} />
+                    <Radar dataKey="score" stroke="#2563eb" fill="#2563eb" fillOpacity={0.12} />
                     <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -200,9 +200,9 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
                     <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
                     <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="avg" name="Average" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="max" name="Maximum" fill="#10b981" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="min" name="Minimum" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="avg" name="Average" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="max" name="Maximum" fill="#059669" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="min" name="Minimum" fill="#dc2626" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -219,9 +219,9 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="Avg Penalty" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Max Penalty" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Avg Missed" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Avg Penalty" fill="#dc2626" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Max Penalty" fill="#d97706" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Avg Missed" fill="#0891b2" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -240,7 +240,7 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
                         <Pie data={[{ v: d['Miss Rate'] }, { v: 100 - d['Miss Rate'] }]}
                           dataKey="v" innerRadius={30} outerRadius={45} startAngle={90} endAngle={-270}>
                           <Cell fill={COLORS[i % COLORS.length]} />
-                          <Cell fill="rgba(255,255,255,0.06)" />
+                          <Cell fill="rgba(0,0,0,0.04)" />
                         </Pie>
                       </PieChart>
                     </ResponsiveContainer>

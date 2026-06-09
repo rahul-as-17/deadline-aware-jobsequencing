@@ -9,8 +9,8 @@ import {
 } from 'recharts';
 
 const ALGO_COLORS = {
-  greedy: '#10b981', bruteforce_optimal: '#f43f5e',
-  dynamic_programming: '#f59e0b', priority_queue: '#06b6d4', ai_enhanced: '#a855f7',
+  greedy: '#059669', bruteforce_optimal: '#dc2626',
+  dynamic_programming: '#d97706', priority_queue: '#0891b2', ai_enhanced: '#2563eb',
 };
 const ALGO_LABELS = {
   greedy: 'Greedy', bruteforce_optimal: 'Brute Force',
@@ -113,9 +113,9 @@ export default function Compare({ addToast }) {
                   <YAxis tick={{fontSize:11}}/>
                   <Tooltip contentStyle={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:8}}/>
                   <Legend wrapperStyle={{fontSize:11}}/>
-                  <Bar dataKey="Net Profit" fill="#6366f1" radius={[4,4,0,0]}/>
-                  <Bar dataKey="Profit" fill="#10b981" radius={[4,4,0,0]}/>
-                  <Bar dataKey="Penalty" fill="#f43f5e" radius={[4,4,0,0]}/>
+                  <Bar dataKey="Net Profit" fill="#2563eb" radius={[4,4,0,0]}/>
+                  <Bar dataKey="Profit" fill="#059669" radius={[4,4,0,0]}/>
+                  <Bar dataKey="Penalty" fill="#dc2626" radius={[4,4,0,0]}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -128,7 +128,7 @@ export default function Compare({ addToast }) {
                   <XAxis dataKey="name" tick={{fontSize:11}}/>
                   <YAxis tick={{fontSize:11}}/>
                   <Tooltip contentStyle={{background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:8}}/>
-                  <Bar dataKey="Time (ms)" fill="#f59e0b" radius={[4,4,0,0]}/>
+                  <Bar dataKey="Time (ms)" fill="#d97706" radius={[4,4,0,0]}/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -139,11 +139,11 @@ export default function Compare({ addToast }) {
               <div className="card-title"><Percent size={14}/> Multi-Metric Radar (normalized 0–100)</div>
               <ResponsiveContainer width="100%" height={280}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.08)"/>
+                  <PolarGrid stroke="rgba(0,0,0,0.08)"/>
                   <PolarAngleAxis dataKey="metric" tick={{fill:'var(--text-secondary)',fontSize:12}}/>
                   <PolarRadiusAxis angle={90} domain={[0,100]} tick={{fill:'var(--text-muted)',fontSize:10}}/>
                   {algoKeys.map((k,i) => {
-                    const c = Object.values(ALGO_COLORS)[i]||'#6366f1';
+                    const c = Object.values(ALGO_COLORS)[i]||'#2563eb';
                     return <Radar key={k} name={k} dataKey={k} stroke={c} fill={c} fillOpacity={0.12}/>;
                   })}
                   <Legend wrapperStyle={{fontSize:12}}/>
