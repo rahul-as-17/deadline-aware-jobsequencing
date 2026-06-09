@@ -28,3 +28,16 @@ export const analyzeScalability   = (params) => api.post('/api/analysis/scalabil
 export const analyzeUtilization   = (params) => api.post('/api/analysis/utilization',        params).then(r => r.data);
 export const analyzePenalty       = (params) => api.post('/api/analysis/penalty',             params).then(r => r.data);
 export const analyzeAll           = (params) => api.post('/api/analysis/full',                params).then(r => r.data);
+
+export const runSimulation = (jobs, algorithm) =>
+  api.post('/api/simulate', { jobs, algorithm }).then(r => r.data);
+
+export const runReschedule = (payload) =>
+  api.post('/api/reschedule', payload).then(r => r.data);
+
+export const explainSchedule = (payload) =>
+  api.post('/api/oracle/explain', payload).then(r => r.data);
+
+export const explainReschedule = (payload) =>
+  api.post('/api/oracle/explain-reschedule', payload).then(r => r.data);
+

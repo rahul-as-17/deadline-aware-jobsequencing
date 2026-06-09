@@ -196,6 +196,72 @@ def model_status():
     }
 
 
+@app.post("/api/simulate")
+def run_simulation(payload: dict):
+    jobs = payload["jobs"]
+    algorithm = payload.get("algorithm", "greedy")
+    
+    from algorithms.simulation_trace import trace_greedy, trace_priority_queue
+    if algorithm == "greedy":
+        events = trace_greedy(jobs)
+    elif algorithm == "priority_queue":
+        events = trace_priority_queue(jobs)
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported algorithm for simulation")
+    
+    return {"events": [e.to_dict() for e in events]}
+
+
+@app.post("/api/reschedule")
+def dynamic_reschedule(payload: dict):
+    from algorithms.dynamic_reschedule import apply_dynamic_event, RescheduleEvent
+    
+    raw_event = payload["event"]
+    event = RescheduleEvent(
+        event_type=raw_event["event_type"],
+        affected_job_id=raw_event["affected_job_id"],
+        at_time=raw_event["at_time"],
+        new_job=raw_event.get("new_job"),
+        message=raw_event.get("message", "")
+    )
+    
+    result = apply_dynamic_event(
+        current_timeline=payload["current_timeline"],
+        scheduled_jobs=payload["scheduled_jobs"],
+        missed_jobs=payload["missed_jobs"],
+        all_jobs=payload["all_jobs"],
+        event=event,
+        current_time=payload["current_time"]
+    )
+    return result
+
+
+@app.post("/api/oracle/explain")
+def explain_schedule_route(payload: dict):
+    algorithm = payload["algorithm"]
+    jobs = payload["jobs"]
+    scheduled = payload["scheduled"]
+    missed = payload["missed"]
+    net_profit = payload["net_profit"]
+    
+    from algorithms.oracle_engine import generate_local_explanation
+    explanation = generate_local_explanation(algorithm, jobs, scheduled, missed, net_profit)
+    return {"explanation": explanation}
+
+
+@app.post("/api/oracle/explain-reschedule")
+def explain_reschedule_route(payload: dict):
+    event_type = payload["event_type"]
+    affected_job_id = payload["affected_job_id"]
+    at_time = payload["at_time"]
+    delta = payload["delta"]
+    all_jobs = payload["all_jobs"]
+    
+    from algorithms.oracle_engine import generate_local_reschedule_explanation
+    explanation = generate_local_reschedule_explanation(event_type, affected_job_id, at_time, delta, all_jobs)
+    return {"explanation": explanation}
+
+
 # ─── Analysis Endpoints ──────────────────────────────────────
 
 class AnalysisRequest(BaseModel):

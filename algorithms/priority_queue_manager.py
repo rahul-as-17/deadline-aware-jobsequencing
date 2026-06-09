@@ -140,7 +140,7 @@ class PriorityQueueManager:
         return result
 
 
-def priority_queue_schedule(jobs: List[Dict]) -> Dict:
+def priority_queue_schedule(jobs: List[Dict], start_time: int = 0, locked_timeline: List = None) -> Dict:
     """
     Schedule jobs using the priority queue manager.
     Simulates time progression and picks the highest-priority job
@@ -148,32 +148,94 @@ def priority_queue_schedule(jobs: List[Dict]) -> Dict:
 
     Args:
         jobs: List of job dicts
+        start_time: Time tick to start scheduling decisions from
+        locked_timeline: Optional pre-existing timeline slots to preserve
 
     Returns:
         Scheduling result dict
     """
-    start_time = time.perf_counter()
+    start_perf = time.perf_counter()
 
     if not jobs:
-        return _empty_result(start_time)
+        if locked_timeline:
+            # Reconstruct result based on locked timeline
+            scheduled_jobs = []
+            scheduled_ids = set()
+            n_slots = len(locked_timeline)
+            i = 0
+            while i < n_slots:
+                jid = locked_timeline[i]
+                if jid is not None:
+                    s = i
+                    while i < n_slots and locked_timeline[i] == jid:
+                        i += 1
+                    e = i - 1
+                    scheduled_jobs.append({"job_id": jid, "start_time": s, "end_time": e})
+                    scheduled_ids.add(jid)
+                else:
+                    i += 1
+            
+            elapsed_ms = (time.perf_counter() - start_perf) * 1000
+            return {
+                "algorithm": "priority_queue",
+                "scheduled_jobs": scheduled_jobs,
+                "total_profit": 0.0,
+                "total_penalty": 0.0,
+                "net_profit": 0.0,
+                "missed_jobs": [],
+                "execution_time_ms": round(elapsed_ms, 4),
+                "utilization": round(sum(1 for x in locked_timeline if x is not None) / max(len(locked_timeline), 1), 4),
+                "jobs_scheduled": len(scheduled_jobs),
+                "jobs_missed": 0,
+                "timeline": list(locked_timeline)
+            }
+        else:
+            return _empty_result(start_perf)
 
     max_deadline = max(j["deadline"] for j in jobs)
+    
+    if locked_timeline:
+        max_deadline = max(max_deadline, len(locked_timeline) - 1)
+        timeline = list(locked_timeline) + [None] * max(0, (max_deadline + 1) - len(locked_timeline))
+    else:
+        timeline = [None] * (max_deadline + 1)
+
     pq = PriorityQueueManager()
 
     # Sort jobs by arrival time
     sorted_jobs = sorted(jobs, key=lambda j: j.get("arrival_time", 0))
     job_idx = 0
 
-    timeline = [None] * (max_deadline + 1)
     scheduled_jobs = []
     scheduled_ids = set()
     total_profit = 0.0
-    current_time = 0
+
+    # If we have a locked timeline, initialize scheduled_ids and scheduled_jobs from it
+    if locked_timeline:
+        n_slots = len(locked_timeline)
+        i = 0
+        while i < n_slots:
+            jid = locked_timeline[i]
+            if jid is not None:
+                s = i
+                while i < n_slots and locked_timeline[i] == jid:
+                    i += 1
+                e = i - 1
+                scheduled_jobs.append({"job_id": jid, "start_time": s, "end_time": e})
+                scheduled_ids.add(jid)
+                job_obj = next((j for j in jobs if j["id"] == jid), None)
+                if job_obj:
+                    total_profit += job_obj["profit"]
+            else:
+                i += 1
+
+    current_time = start_time
 
     while current_time <= max_deadline:
         # Add newly arrived jobs
         while job_idx < len(sorted_jobs) and sorted_jobs[job_idx].get("arrival_time", 0) <= current_time:
-            pq.add_job(sorted_jobs[job_idx], current_time)
+            if sorted_jobs[job_idx]["id"] not in scheduled_ids:
+                pq.add_job(sorted_jobs[job_idx], current_time)
             job_idx += 1
 
         # Update priorities for current time
@@ -204,10 +266,8 @@ def priority_queue_schedule(jobs: List[Dict]) -> Dict:
                         scheduled_ids.add(job["id"])
                         total_profit += job["profit"]
                     else:
-                        # Put it back and try later
                         pq.add_job(job, current_time)
                 else:
-                    # Can't fit before deadline — job is lost
                     pass
 
         current_time += 1
@@ -215,7 +275,7 @@ def priority_queue_schedule(jobs: List[Dict]) -> Dict:
     missed_jobs = [j["id"] for j in jobs if j["id"] not in scheduled_ids]
     total_penalty = sum(j["penalty"] for j in jobs if j["id"] not in scheduled_ids)
 
-    elapsed_ms = (time.perf_counter() - start_time) * 1000
+    elapsed_ms = (time.perf_counter() - start_perf) * 1000
     used_slots = sum(1 for s in timeline if s is not None)
     utilization = used_slots / max(len(timeline), 1)
 
@@ -230,6 +290,20 @@ def priority_queue_schedule(jobs: List[Dict]) -> Dict:
         "utilization": round(utilization, 4),
         "jobs_scheduled": len(scheduled_jobs),
         "jobs_missed": len(missed_jobs),
+        "timeline": timeline
+    }
+
+
+def run_priority_queue(jobs: List[Dict], start_time: int = 0, locked_timeline: List = None) -> Dict:
+    """
+    Wrapper for dynamic rescheduling that returns the format expected by the rescheduling engine.
+    """
+    res = priority_queue_schedule(jobs, start_time=start_time, locked_timeline=locked_timeline)
+    return {
+        "timeline": res["timeline"],
+        "scheduled": res["scheduled_jobs"],
+        "missed": res["missed_jobs"],
+        "net_profit": res["net_profit"]
     }
 
 
@@ -245,4 +319,5 @@ def _empty_result(start_time: float) -> Dict:
         "utilization": 0.0,
         "jobs_scheduled": 0,
         "jobs_missed": 0,
+        "timeline": []
     }

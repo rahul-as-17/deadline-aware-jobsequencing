@@ -1,6 +1,6 @@
 const COLORS = ['#2563eb','#059669','#d97706','#dc2626','#0891b2','#7c3aed','#ea580c','#65a30d','#db2777','#0d9488','#6d28d9','#ca8a04'];
 
-export default function GanttChart({ scheduledJobs, allJobs }) {
+export default function GanttChart({ scheduledJobs, allJobs, highlightTime }) {
   if (!scheduledJobs || !scheduledJobs.length) {
     return <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1.5rem 0' }}>No jobs scheduled.</div>;
   }
@@ -45,6 +45,22 @@ export default function GanttChart({ scheduledJobs, allJobs }) {
                     title={`Deadline: ${job.deadline}`}
                   />
                 )}
+                {/* Time highlight marker */}
+                {highlightTime !== undefined && highlightTime !== null && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${(highlightTime / maxEnd) * 100}%`,
+                    top: 0,
+                    bottom: 0,
+                    width: '2px',
+                    background: '#a855f7',
+                    borderLeft: '1px dashed #ffffff',
+                    zIndex: 5,
+                    pointerEvents: 'none',
+                  }}
+                    title={`Current Time: ${highlightTime}`}
+                  />
+                )}
               </div>
             </div>
           );
@@ -57,6 +73,11 @@ export default function GanttChart({ scheduledJobs, allJobs }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
           <div style={{ width: 1, height: 12, background: 'var(--rose)', opacity: 0.6 }} /> Deadline
         </div>
+        {highlightTime !== undefined && highlightTime !== null && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div style={{ width: 2, height: 12, background: '#a855f7', borderLeft: '1px dashed #ffffff' }} /> Current time (t={highlightTime})
+          </div>
+        )}
       </div>
     </div>
   );
