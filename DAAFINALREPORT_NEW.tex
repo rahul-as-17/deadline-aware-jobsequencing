@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,oneside]{report}
+\documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amsfonts,amssymb}
 \usepackage{graphicx}
@@ -38,14 +38,13 @@
     \textbf{DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING}\\
     \textbf{RV COLLEGE OF ENGINEERING\textsuperscript{\textregistered}, BENGALURU-59}\\
     \vspace{0.8cm}
-    \includegraphics[width=0.25\textwidth]{logo_placeholder} \\
     \textit{(Autonomous Institution Affiliated to VTU, Belagavi)}\\
     \vspace{1.5cm}
     
     \Large
     \textbf{INTELLIGENT DEADLINE-AWARE JOB SCHEDULING SYSTEM USING AI AND ADVANCED SCHEDULING ALGORITHMS}\\
     
-    \vspace{1cm}
+    \vspace{1.0cm}
     \large
     \textbf{DESIGN AND ANALYSIS OF ALGORITHMS (CD343AI)}\\
     \textbf{IV SEMESTER PROJECT REPORT}\\
@@ -89,7 +88,7 @@
 \noindent
 Certified that the DESIGN AND ANALYSIS OF ALGORITHMS Experiential Learning component titled \textbf{``INTELLIGENT DEADLINE-AWARE JOB SCHEDULING SYSTEM USING AI AND ADVANCED SCHEDULING ALGORITHMS''} is carried out by \textbf{Rahul A S (1RV24CS215)} and \textbf{Ramakrishna V (1RV24CS222)}, who are bonafide students of RV College of Engineering, Bengaluru, in fulfilment for the 4th semester Experiential Learning component, during the academic year 2025-2026. It is certified that all corrections/suggestions indicated for the Internal Assessment have been incorporated in the report deposited in the departmental library.
 
-\vspace{3cm}
+\vspace{2.5cm}
 \noindent
 \begin{tabular}{cc}
     \textbf{Dr. Azra Nasreen} & \textbf{Dr. Shanta Rangaswamy} \\
@@ -100,7 +99,7 @@ Certified that the DESIGN AND ANALYSIS OF ALGORITHMS Experiential Learning compo
     Signature of Faculty In-charge & Signature of Head of Department
 \end{tabular}
 
-\vspace{3cm}
+\vspace{2.5cm}
 \noindent
 \textbf{External Examiners:}
 \vspace{0.5cm}
@@ -128,12 +127,12 @@ Certified that the DESIGN AND ANALYSIS OF ALGORITHMS Experiential Learning compo
 \noindent
 We, \textbf{Rahul A S (1RV24CS215)} and \textbf{Ramakrishna V (1RV24CS222)}, students of Fourth Semester B.E., Department of Computer Science and Engineering, RV College of Engineering, Bengaluru, hereby declare that the project work titled \textbf{``INTELLIGENT DEADLINE-AWARE JOB SCHEDULING SYSTEM USING AI AND ADVANCED SCHEDULING ALGORITHMS''} has been carried out by us and submitted in fulfillment for the Internal Assessment of the course: \textbf{DESIGN AND ANALYSIS OF ALGORITHMS (CD343AI)} during the academic year 2025-2026. We also declare that the matter embodied in this report has not been submitted to any other university or institution for the award of any other degree or diploma.
 
-\vspace{2cm}
+\vspace{1.5cm}
 \noindent
 \textbf{Place:} Bengaluru \\
 \textbf{Date:} 10/06/2026
 
-\vspace{3cm}
+\vspace{2.5cm}
 \noindent
 \begin{tabular}{p{7cm}p{7cm}}
     \textbf{Name:} & \textbf{Signature:} \\
@@ -167,7 +166,7 @@ We thank all the teaching staff and technical staff of the Computer Science and 
 \noindent
 Lastly, we take this opportunity to thank our family members and friends who provided all the backup support and motivation throughout the project work.
 
-\vspace{2.5cm}
+\vspace{2cm}
 \noindent
 \begin{tabular}{p{7cm}p{7cm}}
     & \textbf{Rahul A S} \\
@@ -181,6 +180,7 @@ Lastly, we take this opportunity to thank our family members and friends who pro
 % ==========================================
 \pagenumbering{roman}
 \tableofcontents
+\newpage
 \listoffigures
 \listoftables
 \newpage
@@ -190,11 +190,16 @@ Lastly, we take this opportunity to thank our family members and friends who pro
 % ==========================================
 \pagenumbering{arabic}
 
-\begin{abstract}
+\begin{center}
+    \Large \textbf{ABSTRACT}
+\end{center}
+\noindent
 In modern computing environments, task scheduling is essential for maximizing resource utilization, improving system throughput, and ensuring timely completion of tasks. Traditional scheduling algorithms focus on single-objective optimizations, rendering them ineffective under realistic multi-constraint environments with strict deadlines, penalties, varying execution durations, and dynamic task arrivals.
 
+\noindent
 This report presents an \textbf{Intelligent Deadline-Aware Job Scheduling System} that integrates classical Design and Analysis of Algorithms (DAA) concepts with local rule-based Artificial Intelligence engines. The system models jobs using deadlines, execution durations, profits, penalties, and arrival times. We implement and evaluate several optimization models, including Greedy heuristics, Brute-Force optimal search, Dynamic Programming, and online Priority Queue scheduling. 
 
+\noindent
 Furthermore, we introduce three core experiential additions:
 \begin{enumerate}
     \item \textbf{Live Playback Simulation}: Programmatic iteration-by-iteration traces that log event transitions and snapshot Gantt timelines tick-by-tick.
@@ -202,21 +207,24 @@ Furthermore, we introduce three core experiential additions:
     \item \textbf{Scheduling Oracle}: Generates comprehensive analytical explanations of scheduler allocations and complexity bounds locally without API key dependencies.
 \end{enumerate}
 The backend is built in Python and FastAPI, while the visualization dashboard is constructed using React, Vite, and custom CSS-variable dark theme styles. Performance reviews demonstrate that dynamic priority rescheduling reduces penalty accumulation and maintains system stability under highly volatile workloads.
-\end{abstract}
+
+\vspace{1cm}
+\noindent
+\textbf{Keywords:} Job Scheduling, Deadline-Aware Scheduling, Greedy Algorithm, Dynamic Programming, Neural Networks, Artificial Intelligence, Resource Allocation, Profit Optimization, Penalty Minimization.
 
 \newpage
 
 % ==========================================
-% CHAPTER 1: INTRODUCTION
+% SECTION 1: INTRODUCTION
 % ==========================================
-\chapter{Introduction}
+\section{Introduction}
 
-\section{Deadline-Aware Job Scheduling}
-Scheduling is a fundamental optimization problem in computer science. The core task involves allocating limited execution units (such as CPU cores, server bandwidth, or assembly lines) to a set of competing operations while satisfying specific constraints. Traditional schedulers often prioritize simple metrics like execution span (makespan) or total processing time. However, industrial environments introduce strict \textbf{deadlines} $D_i$ where missing a target time leads to system failures or severe operational degradation.
+\subsection{Deadline-Aware Job Scheduling}
+Scheduling is a fundamental optimization problem in computer science. The core task involves allocating limited resources to a set of competing operations while satisfying specific constraints. Traditional schedulers often prioritize simple metrics like execution span (makespan) or total processing time. However, industrial environments introduce strict \textbf{deadlines} $D_i$ where missing a target time leads to system failures or severe operational degradation.
 
 Under the deadline-aware paradigm, scheduling becomes a selective allocation challenge. When the cumulative duration of jobs exceeds the available timeline limit, the scheduler must select a subset of jobs that yields maximum output while respecting chronological constraints. 
 
-\section{Real-World Scheduling Challenges}
+\subsection{Real-World Scheduling Challenges}
 Modern systems operate in highly volatile environments where static heuristics fail:
 \begin{itemize}
     \item \textbf{Varying Execution Durations} $t_i$: Tasks do not require equal compute intervals. Long-running tasks can block resource queues, starving shorter tasks.
@@ -225,27 +233,26 @@ Modern systems operate in highly volatile environments where static heuristics f
     \item \textbf{Chronological Disruptions}: Tasks may crash, undergo preemption by higher priority tasks, or suffer execution exceptions.
 \end{itemize}
 
-\section{Artificial Intelligence in Scheduling}
+\subsection{Artificial Intelligence in Scheduling}
 Traditional scheduling relies on rigid, static bounds. Incorporating machine learning enables schedulers to learn patterns from optimal executions and predict priority weights dynamically. In this project, we utilize an offline PyTorch-based neural network model trained on optimal datasets generated via the Brute-Force module. When queried, this model calculates priority values for scheduling layout adjustments in real-time, matching or outperforming standard heuristics for highly overlapped job arrays.
 
-\newpage
 
 % ==========================================
-% CHAPTER 2: PROBLEM DEFINITION
+% SECTION 2: PROBLEM DEFINITION
 % ==========================================
-\chapter{Problem Definition}
+\section{Problem Definition}
 
-\section{Problem Statement}
+\subsection{Problem Statement}
 Given a set of $N$ jobs, where each job $J_i$ is defined by a tuple:
 \begin{equation}
 J_i = (id_i, A_i, t_i, D_i, P_i, L_i)
 \end{equation}
-Where $id_i$ is the unique identifier, $A_i$ is the arrival time, $t_i$ is the execution duration, $D_i$ is the absolute deadline, $P_i$ is the profit, and $L_i$ is the penalty incurred if the job misses its deadline. The resource (processor) can execute at most one job at any time tick $t$. If a job is scheduled, it must run for $t_i$ units of time in the interval $[A_i, D_i]$. The goal is to determine a scheduling layout timeline $T$ that maximizes the Net Profit $NP(T)$:
+Where $id_i$ is the unique identifier, $A_i$ is the arrival time, $t_i$ is the execution duration, $D_i$ is the absolute deadline, $P_i$ is the profit, and $L_i$ is the penalty incurred if the job misses its deadline. The resource (processor) can execute at most one job at any time tick $t$. If a job is scheduled, it must run for $t_i$ units of time in the interval $[A_i, D_i]$. The goal is to maximize the Net Profit $NP(T)$ of the schedule timeline $T$:
 \begin{equation}
 NP(T) = \sum_{J_i \in \text{Scheduled}} P_i - \sum_{J_j \in \text{Missed}} L_j
 \end{equation}
 
-\section{Background Information}
+\subsection{Background Information}
 Classical job sequencing heuristics assign a single unit of duration to all tasks. In our enhanced formulation, jobs can stretch across multiple slots, introducing complex packing conflicts. We model the timeline as a discrete array of slots. Standard optimization is evaluated via:
 \begin{itemize}
     \item \textbf{Greedy Scheduler}: Prioritizes jobs descending by the profit-to-deadline ratio $\frac{P_i}{D_i}$ and allocates slots backwards.
@@ -257,7 +264,7 @@ Classical job sequencing heuristics assign a single unit of duration to all task
     \end{equation}
 \end{itemize}
 
-\section{Real-World Scheduling Scenarios}
+\subsection{Real-World Scheduling Scenarios}
 The architecture maps to diverse technical applications:
 \begin{itemize}
     \item Cloud Task Scheduling (eg. SLA compliance on virtual machines).
@@ -265,14 +272,13 @@ The architecture maps to diverse technical applications:
     \item E-commerce Logistics (eg. prioritizing delivery route schedules to minimize delay penalties).
 \end{itemize}
 
-\newpage
 
 % ==========================================
-% CHAPTER 3: OBJECTIVES
+% SECTION 3: OBJECTIVES
 % ==========================================
-\chapter{Objectives}
+\section{Objectives}
 
-\section{Primary Objectives}
+\subsection{Primary Objectives}
 \begin{itemize}
     \item Implement and benchmark five core scheduling models (Greedy, Brute-Force, Dynamic Programming, Priority Queue, AI-enhanced).
     \item Develop an online \textbf{Live Simulation Engine} that trace-logs queue actions (Push/Pop/Consider) and snapshots Gantt layouts tick-by-tick.
@@ -280,56 +286,55 @@ The architecture maps to diverse technical applications:
     \item Create a local rule-based \textbf{Scheduling Oracle} to explain scheduler decisions and delta impacts academically without LLM API keys.
 \end{itemize}
 
-\section{Secondary Objectives}
+\subsection{Secondary Objectives}
 \begin{itemize}
     \item Build a responsive frontend dashboard featuring Gantt chart renders, vertical slot grid alignment, and global timeline indicators.
     \item Implement a dark mode theme toggle using CSS variables with local storage persistence.
     \item Graphically analyze algorithm metrics (utilization, execution overhead, profit/penalty yields).
 \end{itemize}
 
-\newpage
 
 % ==========================================
-% CHAPTER 4: METHODOLOGY
+% SECTION 4: METHODOLOGY
 % ==========================================
-\chapter{Methodology}
+\section{Methodology}
 
-\section{Approach}
+\subsection{Approach}
 The architecture separates concerns into a FastAPI backend and a React frontend. The backend holds the algorithm solvers and trace logging engines. The frontend provides visualization layers (Gantt, Recharts charts, and the Oracle review card).
 
-\section{Procedures}
-We detail the scheduling pipeline layout in the flowchart below.
+\subsection{Procedures}
+We detail the vertical scheduling pipeline layout in the flowchart below, representing the execution logic of baseline computations and dynamic heap adjustments.
 
-\vspace{1cm}
+\vspace{0.8cm}
 \begin{center}
-\begin{tikzpicture}[nodeDistance=1.5cm, auto]
+\begin{tikzpicture}[nodeDistance=1.2cm, auto]
     % Styles
-    \tikzstyle{block} = [rectangle, draw, fill=blue!10, text width=7em, text centered, rounded corners, minimum height=3em]
-    \tikzstyle{decision} = [diamond, draw, fill=orange!10, text width=5em, text centered, minimum height=3em]
+    \tikzstyle{block} = [rectangle, draw, fill=blue!10, text width=10em, text centered, rounded corners, minimum height=2.2em, font=\small]
+    \tikzstyle{decision} = [diamond, draw, fill=orange!10, text width=6em, text centered, minimum height=2.2em, font=\small, aspect=1.3]
     \tikzstyle{line} = [draw, -latex', thick]
     
-    % Nodes
+    % Nodes (Vertically Stacked)
     \node [block] (input) {Job Configuration (Input)};
-    \node [block] (engine) [right=1cm of input] {Scheduler Engine};
-    \node [decision] (mode) [right=1.2cm of engine] {Disruption Event?};
-    \node [block] (normal) [above right=1cm and 1cm of mode] {Compute Baseline Timeline};
-    \node [block] (resch) [below right=1cm and 1cm of mode] {Apply PQ Healing Loop};
-    \node [block] (oracle) [right=6.5cm of mode] {Scheduling Oracle Report};
-    \node [block] (dashboard) [below=1.5cm of oracle] {Render Gantt \& Stats};
+    \node [block] (engine) [below=0.8cm of input] {Scheduler Engine};
+    \node [decision] (mode) [below=0.8cm of engine] {Disruption?};
+    \node [block] (normal) [below left=1.2cm and 0.8cm of mode] {Baseline Schedule};
+    \node [block] (resch) [below right=1.2cm and 0.8cm of mode] {PQ Rescheduling};
+    \node [block] (oracle) [below=3.2cm of mode] {Scheduling Oracle};
+    \node [block] (dashboard) [below=0.8cm of oracle] {Render Gantt \& Stats};
     
     % Connections
     \path [line] (input) -- (engine);
     \path [line] (engine) -- (mode);
-    \path [line] (mode) -- node [above] {No} (normal);
-    \path [line] (mode) -- node [below] {Yes} (resch);
-    \path [line] (normal) -- (oracle);
-    \path [line] (resch) -- (oracle);
+    \path [line] (mode.west) -| node [above, pos=0.5] {No} (normal.north);
+    \path [line] (mode.east) -| node [above, pos=0.5] {Yes} (resch.north);
+    \path [line] (normal.south) |- (oracle.west);
+    \path [line] (resch.south) |- (oracle.east);
     \path [line] (oracle) -- (dashboard);
 \end{tikzpicture}
 \end{center}
-\vspace{1cm}
+\vspace{0.8cm}
 
-\subsection{Analytical Oracle Explanation Engine}
+\subsubsection{Analytical Oracle Explanation Engine}
 To generate descriptions locally, the backend runs two rule-based pipelines:
 \begin{lstlisting}[language=Python]
 def generate_local_explanation(algorithm, jobs, scheduled, missed, net_profit):
@@ -338,14 +343,13 @@ def generate_local_explanation(algorithm, jobs, scheduled, missed, net_profit):
     # Appends algorithm complexity bounds
 \end{lstlisting}
 
-\newpage
 
 % ==========================================
-% CHAPTER 5: PROJECT EXECUTION
+% SECTION 5: PROJECT EXECUTION
 % ==========================================
-\chapter{Project Execution}
+\section{Project Execution}
 
-\section{Planning and Design}
+\subsection{Planning and Design}
 The planning phase focused on creating an interactive simulation space where users could inspect trace logs and inject disruptions mid-timeline. The design specified:
 \begin{itemize}
     \item Timeline playback controller supporting play, pause, and speed inputs.
@@ -353,11 +357,11 @@ The planning phase focused on creating an interactive simulation space where use
     \item Vertical grid line alignment and absolute timeline overlays in the Gantt component.
 \end{itemize}
 
-\section{Implementation}
+\subsection{Implementation}
 \begin{figure}[h]
     \centering
     \rect(0,0)(10,6)
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=4cm] {Image Placeholder 1: Dashboard Interface};
+    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 1: Dashboard Interface};
     \caption{Interactive Scheduling Dashboard displaying algorithm comparisons and metrics.}
     \label{fig:dashboard}
 \end{figure}
@@ -367,14 +371,13 @@ The frontend component uses absolute positioning to draw Gantt blocks. The grid 
 X = 70\text{px} + 0.6\text{rem} + \left(\frac{t}{T_{\max}}\right) \cdot \left(100\% - 70\text{px} - 0.6\text{rem}\right)
 \end{equation}
 
-\newpage
 
 % ==========================================
-% CHAPTER 6: TOOLS AND TECHNIQUES USED
+% SECTION 6: TOOLS AND TECHNIQUES USED
 % ==========================================
-\chapter{Tools and Techniques Used}
+\section{Tools and Techniques Used}
 
-\section{Tools}
+\subsection{Tools}
 \begin{itemize}
     \item \textbf{FastAPI}: High-performance async backend framework.
     \item \textbf{PyTorch}: Machine learning library for AI model training.
@@ -382,44 +385,43 @@ X = 70\text{px} + 0.6\text{rem} + \left(\frac{t}{T_{\max}}\right) \cdot \left(10
     \item \textbf{Lucide-React}: Elegant vector icon elements.
 \end{itemize}
 
-\section{Techniques}
+\subsection{Techniques}
 \begin{itemize}
     \item \textbf{Greedy Allocation}: Places tasks by sorting ratios descending.
     \item \textbf{Max-Heap Prioritization}: Maintains dynamic task insertion order at run time.
     \item \textbf{Local State Management}: React state synchronizes with local storage caching for immediate theme transitions.
 \end{itemize}
 
-\newpage
 
 % ==========================================
-% CHAPTER 7: PARTIAL RESULTS
+% SECTION 7: PARTIAL RESULTS
 % ==========================================
-\chapter{Partial Results}
+\section{Partial Results}
 
-\section{Initial Findings}
+\subsection{Initial Findings}
 Initial checks focused on verifying that the live simulation correctly snapshot timeline states. We tested datasets with 5, 8, and 12 jobs. The Greedy scheduler completed execution within 2ms, but occasionally suffered from sub-optimal packing under high deadline overlaps.
 
-\section{Iterative Improvements}
+\subsection{Iterative Improvements}
 \begin{figure}[h]
     \centering
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=4cm] {Image Placeholder 2: Live Playback Simulation Page};
+    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 2: Live Playback Simulation Page};
     \caption{Simulation Page displaying step-by-step playback controls and vertical grid lines.}
     \label{fig:simulation}
 \end{figure}
 We refactored the Gantt indicator to render a single continuous vertical line crossing all rows. We also embedded track grids to align time tick labels precisely above track columns.
 
-\newpage
 
 % ==========================================
-% CHAPTER 8: RESULTS AND DISCUSSION
+% SECTION 8: RESULTS AND DISCUSSION
 % ==========================================
-\chapter{Results and Discussion}
+\section{Results and Discussion}
 
-\section{Results}
+\subsection{Results}
 Testing results demonstrate that the Dynamic Rescheduling Engine successfully resolves overlaps when preemption events occur.
 
 \begin{table}[h]
     \centering
+    \small
     \begin{tabular}{lcccc}
         \toprule
         \textbf{Algorithm} & \textbf{Net Profit (₹)} & \textbf{Penalty (₹)} & \textbf{Overhead (ms)} & \textbf{Optimality} \\
@@ -435,17 +437,16 @@ Testing results demonstrate that the Dynamic Rescheduling Engine successfully re
     \label{tab:results}
 \end{table}
 
-\section{Discussion}
+\subsection{Discussion}
 When a preemption or error event is triggered at time $t$, the scheduler evicts the target job, updates its remaining duration, and invokes the Priority Queue healing loop. This online adjustment achieves near-optimal recovery margins, minimizing penalty accumulation compared to restarting static offline schedulers.
 
-\newpage
 
 % ==========================================
-% CHAPTER 9: PROTOTYPE
+% SECTION 9: PROTOTYPE (HARDWARE/SOFTWARE)
 % ==========================================
-\chapter{Prototype}
+\section{Prototype (Hardware/Software)}
 
-\section{Prototype Description}
+\subsection{Prototype Description}
 The software prototype is hosted locally. The web dashboard provides:
 \begin{itemize}
     \item Visual timelines with track grid boundaries.
@@ -454,41 +455,39 @@ The software prototype is hosted locally. The web dashboard provides:
     \item A light/dark theme switch toggling global CSS variables.
 \end{itemize}
 
-\section{Development Process}
+\subsection{Development Process}
 The backend server runs on port 8000, while the Vite development server binds to port 5173. Static client assets are compiled into `frontend/dist` and served directly by the FastAPI app when running in production mode.
 
-\section{Testing and Validation}
+\subsection{Testing and Validation}
 \begin{figure}[h]
     \centering
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=4cm] {Image Placeholder 3: Dynamic Rescheduling Page};
+    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 3: Dynamic Rescheduling Page};
     \caption{Dynamic Scheduler Page showing injected events and the Oracle rescheduling analysis panel.}
     \label{fig:dynamic}
 \end{figure}
 Validation verified that preemption events calculate correct profit deltas ($\Delta$). Pushing a new urgent task adjusts subsequent scheduling segments reactively without interrupting completed slots.
 
-\newpage
 
 % ==========================================
-% CHAPTER 10: CONCLUSION
+% SECTION 10: CONCLUSION
 % ==========================================
-\chapter{Conclusion}
+\section{Conclusion}
 
-\section{Summary}
+\subsection{Summary}
 The experiential additions successfully extend the project. Live playback traces and dynamic preemption event loops illustrate operating system scheduling concepts visually. The rule-based Scheduling Oracle provides a high-quality academic narrative locally, making the platform self-contained and useful for pedagogical demonstrations.
 
-\section{Personal Reflections}
-\subsection{Rahul A S}
+\subsection{Personal Reflections}
+\subsubsection{Reflection (Rahul A S)}
 Implementing the simulation playback tracers helped me appreciate the complexity of mapping algorithms to interactive UI layers. Working on Gantt alignment and grid layouts solidified my knowledge of front-end system styling.
 
-\subsection{Ramakrishna V}
+\subsubsection{Reflection (Ramakrishna V)}
 Building the dynamic rescheduling recovery logic and designing the local Oracle compiler helped me bridge the gap between theoretical DAA concepts and actual reactive software systems.
 
-\newpage
 
 % ==========================================
-% CHAPTER 11: REFERENCES
+% SECTION 11: REFERENCES
 % ==========================================
-\chapter{References}
+\section{References}
 \begin{enumerate}
     \item Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. \textit{Introduction to Algorithms}. MIT Press, Fourth Edition.
     \item Jon Kleinberg and Éva Tardos. \textit{Algorithm Design}. Pearson Education.
