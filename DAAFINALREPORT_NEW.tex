@@ -358,10 +358,9 @@ The planning phase focused on creating an interactive simulation space where use
 \end{itemize}
 
 \subsection{Implementation}
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \rect(0,0)(10,6)
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 1: Dashboard Interface};
+    \framebox[0.8\textwidth]{\vbox to 6cm{\vfill\centering [Image Placeholder: Dashboard Interface]\vfill}}
     \caption{Interactive Scheduling Dashboard displaying algorithm comparisons and metrics.}
     \label{fig:dashboard}
 \end{figure}
@@ -402,10 +401,10 @@ X = 70\text{px} + 0.6\text{rem} + \left(\frac{t}{T_{\max}}\right) \cdot \left(10
 Initial checks focused on verifying that the live simulation correctly snapshot timeline states. We tested datasets with 5, 8, and 12 jobs. The Greedy scheduler completed execution within 2ms, but occasionally suffered from sub-optimal packing under high deadline overlaps.
 
 \subsection{Iterative Improvements}
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 2: Live Playback Simulation Page};
-    \caption{Simulation Page displaying step-by-step playback controls and vertical grid lines.}
+    \framebox[0.8\textwidth]{\vbox to 6cm{\vfill\centering [Image Placeholder: Live Playback Simulation Engine]\vfill}}
+    \caption{Simulation Page displaying step-by-step playback controls, traces, and vertical grid lines.}
     \label{fig:simulation}
 \end{figure}
 We refactored the Gantt indicator to render a single continuous vertical line crossing all rows. We also embedded track grids to align time tick labels precisely above track columns.
@@ -437,6 +436,13 @@ Testing results demonstrate that the Dynamic Rescheduling Engine successfully re
     \label{tab:results}
 \end{table}
 
+\begin{figure}[htbp]
+    \centering
+    \framebox[0.8\textwidth]{\vbox to 6cm{\vfill\centering [Image Placeholder: Analytics \& Performance Dashboard]\vfill}}
+    \caption{Analytics Dashboard displaying performance, utilization, and execution overhead comparisons.}
+    \label{fig:analytics}
+\end{figure}
+
 \subsection{Discussion}
 When a preemption or error event is triggered at time $t$, the scheduler evicts the target job, updates its remaining duration, and invokes the Priority Queue healing loop. This online adjustment achieves near-optimal recovery margins, minimizing penalty accumulation compared to restarting static offline schedulers.
 
@@ -459,12 +465,6 @@ The software prototype is hosted locally. The web dashboard provides:
 The backend server runs on port 8000, while the Vite development server binds to port 5173. Static client assets are compiled into `frontend/dist` and served directly by the FastAPI app when running in production mode.
 
 \subsection{Testing and Validation}
-\begin{figure}[h]
-    \centering
-    \node at (5,3) [draw, fill=gray!20, minimum width=8cm, minimum height=3.5cm, font=\small] {Image Placeholder 3: Dynamic Rescheduling Page};
-    \caption{Dynamic Scheduler Page showing injected events and the Oracle rescheduling analysis panel.}
-    \label{fig:dynamic}
-\end{figure}
 Validation verified that preemption events calculate correct profit deltas ($\Delta$). Pushing a new urgent task adjusts subsequent scheduling segments reactively without interrupting completed slots.
 
 
