@@ -250,7 +250,7 @@ def priority_queue_schedule(jobs: List[Dict], start_time: int = 0, locked_timeli
 
                 # Check if we can fit this job starting now
                 end_slot = current_time + duration - 1
-                if end_slot <= deadline and end_slot <= max_deadline:
+                if end_slot < deadline and end_slot < max_deadline:
                     can_fit = all(
                         timeline[s] is None
                         for s in range(current_time, end_slot + 1)

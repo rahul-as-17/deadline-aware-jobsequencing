@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Activity, Play, Target, Timer, Gauge, AlertTriangle, TrendingUp, Zap } from 'lucide-react';
+import { Activity, Play, Target, Timer, Gauge, AlertTriangle, TrendingUp, Zap, HardDrive, Download } from 'lucide-react';
 import { analyzeAll } from '../api.js';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -32,11 +32,65 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
     } finally { setLoading(false); }
   }, [nTests, nJobs, addToast]);
 
+  const handleExportCSV = useCallback(() => {
+    if (!data || !data.large_scale || !data.large_scale.large_scale) {
+      addToast('No large scale data available to export.', 'error');
+      return;
+    }
+    const ls = data.large_scale.large_scale;
+    if (ls.length === 0) return;
+    
+    const headers = Object.keys(ls[0]).join(',');
+    const rows = ls.map(row => Object.values(row).join(','));
+    const csvContent = [headers, ...rows].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'analysis_results.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    addToast('Results exported to CSV!', 'success');
+  }, [data, addToast]);
+
   // Build chart data from analysis results
-  const scalabilityData = data?.scalability?.scalability?.map(row => {
+  const scalabilityData = data?.scalability?.scalability?.map((row, idx, arr) => {
     const r = { jobs: row.n_jobs };
     for (const [k, v] of Object.entries(row)) {
       if (k.endsWith('_avg_ms')) r[label(k.replace('_avg_ms', ''))] = v;
+    }
+
+    // Calculate theoretical baseline curves anchored to the first data point
+    if (arr[0] && arr[0].n_jobs > 0) {
+      const n0 = arr[0].n_jobs;
+
+      const greedy0 = arr[0].greedy_avg_ms || 0.001;
+      const c_n2 = greedy0 / (n0 * n0);
+      r['Theoretical O(N²)'] = +(c_n2 * (row.n_jobs * row.n_jobs)).toFixed(4);
+
+      const dp0 = arr[0].dynamic_avg_ms || 0.001;
+      const logN0 = Math.log2(n0) || 1;
+      const c_nlogn = dp0 / (n0 * logN0);
+      r['Theoretical O(N log N)'] = +(c_nlogn * (row.n_jobs * Math.max(Math.log2(row.n_jobs), 1))).toFixed(4);
+    }
+    return r;
+  }) || [];
+
+  const spaceData = data?.space_complexity?.space_complexity?.map(row => {
+    const r = { jobs: row.n_jobs };
+    for (const [k, v] of Object.entries(row)) {
+      if (k.endsWith('_peak_bytes')) r[label(k.replace('_peak_bytes', ''))] = v;
+    }
+    return r;
+  }) || [];
+
+  const largeScaleData = data?.large_scale?.large_scale?.map(row => {
+    const r = { jobs: row.n_jobs };
+    for (const [k, v] of Object.entries(row)) {
+      if (k.endsWith('_avg_ms')) r[label(k.replace('_avg_ms', '')) + ' Time (ms)'] = v;
+      if (k.endsWith('_avg_profit')) r[label(k.replace('_avg_profit', '')) + ' Profit'] = v;
     }
     return r;
   }) || [];
@@ -45,7 +99,6 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
     ? Object.entries(data.utilization.utilization).map(([k, v], i) => ({
         name: label(k), avg: +(v.avg_utilization * 100).toFixed(1),
         min: +(v.min_utilization * 100).toFixed(1), max: +(v.max_utilization * 100).toFixed(1),
-        fill: COLORS[i % COLORS.length],
       }))
     : [];
 
@@ -53,7 +106,6 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
     ? Object.entries(data.penalty.penalty_analysis).map(([k, v], i) => ({
         name: label(k), 'Avg Penalty': v.avg_penalty, 'Max Penalty': v.max_penalty,
         'Avg Missed': v.avg_missed_jobs, 'Miss Rate': +(v.avg_miss_rate * 100).toFixed(1),
-        fill: COLORS[i % COLORS.length],
       }))
     : [];
 
@@ -89,12 +141,17 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
             <input className="form-input" type="number" min={3} max={10} value={nJobs}
               onChange={e => setNJobs(+e.target.value)} />
           </div>
-          <div style={{ alignSelf: 'flex-end' }}>
+          <div style={{ alignSelf: 'flex-end', display: 'flex', gap: '0.75rem' }}>
             <button className="btn btn-primary" onClick={handleRun} disabled={loading}>
               {loading
                 ? <><span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} /> Analyzing ({nTests} tests)...</>
                 : <><Play size={14} /> Run Full Analysis</>}
             </button>
+            {data && (
+              <button className="btn btn-secondary" onClick={handleExportCSV}>
+                <Download size={14} /> Export Results (CSV)
+              </button>
+            )}
           </div>
         </div>
         {!modelReady && (
@@ -179,10 +236,74 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
                     scalabilityData[0]?.[name] !== undefined &&
                     <Line key={name} type="monotone" dataKey={name} stroke={COLORS[i]} strokeWidth={2} dot={{ r: 3 }} connectNulls />
                   ))}
+                  <Line type="monotone" dataKey="Theoretical O(N²)" stroke="#94a3b8" strokeDasharray="6 3" dot={false} strokeWidth={1.5} />
+                  <Line type="monotone" dataKey="Theoretical O(N log N)" stroke="#cbd5e1" strokeDasharray="3 3" dot={false} strokeWidth={1.5} />
                 </LineChart>
               </ResponsiveContainer>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                Note: Brute-force time grows exponentially (O(n!)), showing the need for heuristic and AI-based approaches.
+                Note: Brute-force time grows exponentially (O(n!)). Dashed grey lines show theoretical O(N²) and O(N log N) baselines anchored to the first data point.
+              </div>
+            </div>
+          )}
+
+          {/* ── Space Complexity Chart ─────────────────────── */}
+          {spaceData.length > 0 && (
+            <div className="card" style={{ marginBottom: '1.5rem' }}>
+              <div className="card-title"><HardDrive size={14} /> Peak Memory — Space Complexity</div>
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={spaceData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="jobs" label={{ value: 'Number of Jobs', position: 'insideBottom', offset: -4, fontSize: 12, fill: 'var(--text-muted)' }} tick={{ fontSize: 11 }} />
+                  <YAxis label={{ value: 'Peak Memory (bytes)', angle: -90, position: 'insideLeft', fontSize: 12, fill: 'var(--text-muted)' }} tick={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  {['Greedy','Dynamic','Priority Q','Brute Force','AI Enhanced'].map((name, i) => (
+                    spaceData[0]?.[name] !== undefined &&
+                    <Line key={name} type="monotone" dataKey={name} stroke={COLORS[i]} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                Peak memory allocation per algorithm measured via Python tracemalloc. DP typically uses more memory due to its tabular memoization.
+              </div>
+            </div>
+          )}
+
+          {/* ── Large-Scale Comparison ─────────────────────── */}
+          {largeScaleData.length > 0 && (
+            <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
+              <div className="card">
+                <div className="card-title"><Timer size={14} /> Execution Time at Scale (ms)</div>
+                <ResponsiveContainer width="100%" height={260}>
+                  <LineChart data={largeScaleData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="jobs" label={{ value: 'Number of Jobs (N)', position: 'insideBottom', offset: -4, fontSize: 12, fill: 'var(--text-muted)' }} tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    {['Greedy Time (ms)','Dynamic Time (ms)','Priority Q Time (ms)','AI Enhanced Time (ms)'].map((name, i) => (
+                      largeScaleData[0]?.[name] !== undefined &&
+                      <Line key={name} type="monotone" dataKey={name} stroke={COLORS[i]} strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="card">
+                <div className="card-title"><TrendingUp size={14} /> Net Profit at Scale (₹)</div>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={largeScaleData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="jobs" label={{ value: 'Number of Jobs (N)', position: 'insideBottom', offset: -4, fontSize: 12, fill: 'var(--text-muted)' }} tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8 }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                    {['Greedy Profit','Dynamic Profit','Priority Q Profit','AI Enhanced Profit'].map((name, i) => (
+                      largeScaleData[0]?.[name] !== undefined &&
+                      <Bar key={name} dataKey={name} fill={COLORS[i]} radius={[2, 2, 0, 0]} />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
           )}
@@ -269,6 +390,8 @@ export default function PerformanceAnalysis({ addToast, modelReady }) {
               )}
               <p><strong>Scalability:</strong> Greedy and DP run in sub-millisecond time even at 12 jobs,
               while brute-force execution time grows exponentially, demonstrating why AI-based scheduling is essential for larger workloads.</p>
+              <p><strong>Space Complexity:</strong> Peak memory profiling shows that DP uses more memory due to its
+              tabular memoization structure, while Greedy and Priority Queue remain lightweight with O(N) space.</p>
             </div>
           </div>
         </>

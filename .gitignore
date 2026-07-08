@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+data/training_data.csv
+ai_model/saved_models/progress.json
+frontend/node_modules/
+frontend/dist/
+.env
+.venv
+env/
+venv/
+*.pth

@@ -7,9 +7,11 @@ Comprehensive module for comparing scheduling algorithms across:
   - Execution time scaling
   - Scalability with increasing job counts
   - System utilization efficiency
+  - Space complexity (peak memory) profiling
+  - Large-scale comparison (N > 12, no brute-force)
 """
 
-import os, sys, time, random
+import os, sys, time, random, tracemalloc
 from typing import List, Dict, Tuple
 import numpy as np
 
@@ -206,12 +208,123 @@ def analyze_penalty(n_tests: int = 50, n_jobs: int = 6, max_deadline: int = 10, 
     return {"penalty_analysis": summary, "n_tests": n_tests}
 
 
+def _measure_space(func, *args, **kwargs) -> int:
+    """Measure peak memory (in bytes) of a single function execution using tracemalloc."""
+    tracemalloc.start()
+    func(*args, **kwargs)
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    return peak
+
+
+def analyze_space_complexity(job_counts: List[int] = None, max_deadline: int = 15, n_trials: int = 3, ai_model=None) -> Dict:
+    """
+    Measure peak memory usage (space complexity) with increasing job count.
+    Uses tracemalloc to capture peak allocation per algorithm invocation.
+    """
+    if job_counts is None:
+        job_counts = [3, 4, 5, 6, 8, 10, 12, 15]
+
+    results = []
+    for n in job_counts:
+        mem_usage = {"n_jobs": n, "greedy": [], "dynamic": [], "priority_queue": []}
+        if n <= 12:
+            mem_usage["bruteforce"] = []
+        if ai_model is not None:
+            mem_usage["ai_enhanced"] = []
+
+        for _ in range(n_trials):
+            jobs = generate_random_jobs(n, max_deadline)
+
+            mem_usage["greedy"].append(_measure_space(greedy_schedule, jobs))
+            mem_usage["dynamic"].append(_measure_space(dynamic_schedule, jobs))
+            mem_usage["priority_queue"].append(_measure_space(priority_queue_schedule, jobs))
+
+            if n <= 12:
+                mem_usage["bruteforce"].append(_measure_space(bruteforce_schedule, jobs))
+
+            if ai_model is not None:
+                from ai_model.predictor import ai_schedule
+                mem_usage["ai_enhanced"].append(_measure_space(ai_schedule, jobs, model=ai_model))
+
+        row = {"n_jobs": n}
+        for algo in ["greedy", "dynamic", "priority_queue", "bruteforce", "ai_enhanced"]:
+            if algo in mem_usage and mem_usage[algo]:
+                row[algo + "_peak_bytes"] = round(float(np.mean(mem_usage[algo])), 2)
+        results.append(row)
+
+    return {"space_complexity": results, "n_trials_per_point": n_trials}
+
+
+def analyze_large_scale(job_counts: List[int] = None, n_trials: int = 3, ai_model=None) -> Dict:
+    """
+    Compare algorithms at large scale (N up to 500) where brute-force is
+    infeasible. Measures execution time AND net profit to demonstrate where
+    AI's learned heuristic outperforms simple greedy at scale.
+    """
+    if job_counts is None:
+        job_counts = [10, 25, 50, 100, 200, 500]
+
+    results = []
+    algos = ["greedy", "dynamic", "priority_queue"]
+    if ai_model is not None:
+        algos.append("ai_enhanced")
+
+    for n in job_counts:
+        # Scale deadline with job count so the timeline isn't artificially cramped
+        max_dl = max(30, n // 2)
+        metrics = {algo: {"exec_ms": [], "net_profit": [], "utilization": [], "jobs_scheduled": []}
+                   for algo in algos}
+
+        for _ in range(n_trials):
+            jobs = generate_random_jobs(n, max_dl)
+
+            g = greedy_schedule(jobs)
+            metrics["greedy"]["exec_ms"].append(g["execution_time_ms"])
+            metrics["greedy"]["net_profit"].append(g["net_profit"])
+            metrics["greedy"]["utilization"].append(g["utilization"])
+            metrics["greedy"]["jobs_scheduled"].append(g["jobs_scheduled"])
+
+            d = dynamic_schedule(jobs)
+            metrics["dynamic"]["exec_ms"].append(d["execution_time_ms"])
+            metrics["dynamic"]["net_profit"].append(d["net_profit"])
+            metrics["dynamic"]["utilization"].append(d["utilization"])
+            metrics["dynamic"]["jobs_scheduled"].append(d["jobs_scheduled"])
+
+            pq = priority_queue_schedule(jobs)
+            metrics["priority_queue"]["exec_ms"].append(pq["execution_time_ms"])
+            metrics["priority_queue"]["net_profit"].append(pq["net_profit"])
+            metrics["priority_queue"]["utilization"].append(pq["utilization"])
+            metrics["priority_queue"]["jobs_scheduled"].append(pq["jobs_scheduled"])
+
+            if ai_model is not None:
+                from ai_model.predictor import ai_schedule
+                ai = ai_schedule(jobs, model=ai_model)
+                metrics["ai_enhanced"]["exec_ms"].append(ai["execution_time_ms"])
+                metrics["ai_enhanced"]["net_profit"].append(ai["net_profit"])
+                metrics["ai_enhanced"]["utilization"].append(ai["utilization"])
+                metrics["ai_enhanced"]["jobs_scheduled"].append(ai["jobs_scheduled"])
+
+        row = {"n_jobs": n}
+        for algo in algos:
+            m = metrics[algo]
+            row[algo + "_avg_ms"] = round(float(np.mean(m["exec_ms"])), 4)
+            row[algo + "_avg_profit"] = round(float(np.mean(m["net_profit"])), 2)
+            row[algo + "_avg_util"] = round(float(np.mean(m["utilization"])), 4)
+            row[algo + "_avg_scheduled"] = round(float(np.mean(m["jobs_scheduled"])), 1)
+        results.append(row)
+
+    return {"large_scale": results, "n_trials_per_point": n_trials}
+
+
 def full_analysis(n_tests: int = 50, n_jobs: int = 6, max_deadline: int = 10, ai_model=None) -> Dict:
     """Run all analyses and return combined results."""
     return {
         "accuracy": analyze_accuracy(n_tests, n_jobs, max_deadline, ai_model) if ai_model else None,
         "greedy_vs_optimal": analyze_greedy_vs_optimal(n_tests, n_jobs, max_deadline),
         "scalability": analyze_scalability(ai_model=ai_model),
+        "space_complexity": analyze_space_complexity(ai_model=ai_model),
+        "large_scale": analyze_large_scale(ai_model=ai_model),
         "utilization": analyze_utilization(n_tests, n_jobs, max_deadline, ai_model),
         "penalty": analyze_penalty(n_tests, n_jobs, max_deadline, ai_model),
     }
