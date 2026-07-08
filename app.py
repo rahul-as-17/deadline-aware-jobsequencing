@@ -165,10 +165,21 @@ def train_model_endpoint(req: TrainRequest):
     global ai_model
     from ai_model.train_model import train_model as do_train
 
-    print("Generating training data...")
-    data_path, total_rows = generate_training_data(n_samples=req.n_samples)
+    n_samples = max(req.n_samples, 5000)  # minimum 5000 for good accuracy
+    print(f"Generating training data ({n_samples} samples)...")
+    
+    model_dir = os.path.join(os.path.dirname(__file__), "ai_model", "saved_models")
+    os.makedirs(model_dir, exist_ok=True)
+    progress_path = os.path.join(model_dir, "progress.json")
+    with open(progress_path, "w") as f:
+        json.dump({"status": "generating_data", "epoch": 0, "total_epochs": req.epochs}, f)
+        
+    data_path, total_rows = generate_training_data(n_samples=n_samples, max_jobs=12, max_deadline=15)
     print(f"Training model with {total_rows} rows...")
-    model_path, history = do_train(data_path=data_path, epochs=req.epochs, batch_size=req.batch_size)
+    model_path, history = do_train(data_path=data_path, epochs=req.epochs, batch_size=req.batch_size, use_v2=True)
+
+    with open(progress_path, "w") as f:
+        json.dump({"status": "idle"}, f)
 
     ai_model = load_model(model_path)
     return {
@@ -194,6 +205,20 @@ def model_status():
         "model_path": os.path.join(model_dir, "scheduler_model.pth") if ai_model else None,
         "training_history": history,
     }
+
+
+@app.get("/api/training-progress")
+def training_progress():
+    """Check current live training progress."""
+    model_dir = os.path.join(os.path.dirname(__file__), "ai_model", "saved_models")
+    progress_path = os.path.join(model_dir, "progress.json")
+    if os.path.exists(progress_path):
+        try:
+            with open(progress_path) as f:
+                return json.load(f)
+        except Exception:
+            return {"status": "idle"}
+    return {"status": "idle"}
 
 
 @app.post("/api/simulate")

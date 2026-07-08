@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Brain, Play, Database, Zap } from 'lucide-react';
-import { trainModel } from '../api.js';
+import { trainModel, trainingProgress } from '../api.js';
 
 export default function TrainAI({ addToast, onModelTrained }) {
   const [loading, setLoading] = useState(false);
@@ -9,6 +9,19 @@ export default function TrainAI({ addToast, onModelTrained }) {
   const [batchSize, setBatchSize] = useState(64);
   const [result, setResult] = useState(null);
   const [progress, setProgress] = useState('');
+  const [liveProgress, setLiveProgress] = useState(null);
+
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        trainingProgress().then(s => setLiveProgress(s)).catch(() => {});
+      }, 2000);
+    } else {
+      setLiveProgress(null);
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleTrain = useCallback(async () => {
     setLoading(true);
@@ -93,6 +106,23 @@ export default function TrainAI({ addToast, onModelTrained }) {
             ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> {progress}</>
             : <><Play size={14} /> Generate Data &amp; Train Model</>}
         </button>
+
+        {loading && liveProgress && liveProgress.status !== 'idle' && (
+          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+              <span>{liveProgress.status === 'generating_data' ? 'Generating Combinatorial Dataset...' : 'Training Neural Network...'}</span>
+              <span>{liveProgress.status === 'training' ? `Epoch ${liveProgress.epoch} / ${liveProgress.total_epochs}` : ''}</span>
+            </div>
+            <div style={{ width: '100%', height: '8px', background: 'var(--progress-wrap)', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ 
+                height: '100%', 
+                background: 'linear-gradient(90deg, var(--accent), var(--cyan))', 
+                width: liveProgress.status === 'generating_data' ? '5%' : `${(liveProgress.epoch / liveProgress.total_epochs) * 100}%`,
+                transition: 'width 0.5s ease'
+              }} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Results */}

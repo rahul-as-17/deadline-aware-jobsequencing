@@ -1,9 +1,9 @@
 {
-  "n_samples": 2000,
+  "n_samples": 5000,
   "min_jobs": 4,
-  "max_jobs": 8,
-  "max_deadline": 10,
-  "total_rows": 12100,
+  "max_jobs": 12,
+  "max_deadline": 15,
+  "total_rows": 40378,
   "features": [
     "deadline_norm",
     "duration_norm",
@@ -14,7 +14,19 @@
     "urgency",
     "slack_ratio",
     "density_norm",
-    "competition"
+    "competition",
+    "effective_window",
+    "profit_density_rank",
+    "tight_competitors",
+    "relative_profit",
+    "deadline_pressure",
+    "penalty_risk",
+    "timeline_congestion",
+    "profit_pct",
+    "slack_pct",
+    "dominance_score",
+    "net_value",
+    "greedy_signal"
   ],
   "label": "1=scheduled, 0=missed"
 }

@@ -477,12 +477,12 @@ export default function AboutProject() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
             {[
-              { name: 'Dashboard', desc: 'Overview portal with quick demo, AI model status, and algorithm summaries.', color: C.accent, icon: BarChart3 },
+              { name: 'Dashboard', desc: 'Overview portal with real-time AI model status and algorithm formulas.', color: C.accent, icon: BarChart3 },
               { name: 'Scheduler', desc: 'Interactive job editor — add, delete, or generate random jobs. Run any algorithm and visualize results on a Gantt chart.', color: C.emerald, icon: Cpu },
               { name: 'Compare', desc: 'Runs all algorithms concurrently on the same job set. Displays a side-by-side summary table of net profit, speed, and utilization.', color: C.amber, icon: GitBranch },
               { name: 'Analytics', desc: 'Training curves for loss and accuracy. Visualize how the AI model learned over epochs.', color: C.cyan, icon: BarChart3 },
-              { name: 'Performance', desc: 'Monte-Carlo profiling: scalability curves, profit comparisons, utilization, and penalty analysis across all algorithms.', color: C.rose, icon: Zap },
-              { name: 'Train AI', desc: 'Configure hyperparameters (epochs, samples, batches) and trigger model training directly from the browser.', color: C.accent, icon: Brain },
+              { name: 'Performance', desc: 'Monte-Carlo profiling: scalability curves, profit comparisons, utilization, and penalty analysis across all algorithms with CSV data export.', color: C.rose, icon: Zap },
+              { name: 'Train AI', desc: 'Configure hyperparameters (epochs, samples, batches) and trigger model training directly from the browser with a live training progress bar.', color: C.accent, icon: Brain },
             ].map(p => (
               <div key={p.name} style={{
                 background: 'var(--bg-base)', borderRadius: 12, padding: '1rem',

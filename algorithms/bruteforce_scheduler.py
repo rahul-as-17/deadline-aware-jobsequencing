@@ -97,7 +97,7 @@ def _fill_slots(sorted_jobs, max_deadline: int):
         duration = job["duration"]
         arrival = job.get("arrival_time", 0)
 
-        for end in range(min(deadline, max_deadline), arrival + duration - 2, -1):
+        for end in range(min(deadline - 1, max_deadline - 1), arrival + duration - 2, -1):
             start = end - duration + 1
             if start < arrival:
                 break

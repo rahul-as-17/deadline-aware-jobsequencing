@@ -37,7 +37,7 @@ def predict_priorities(model, jobs: List[Dict]) -> List[float]:
     features = [extract_features(job, jobs) for job in jobs]
     features_tensor = torch.tensor(features, dtype=torch.float32)
     with torch.no_grad():
-        scores = model(features_tensor).squeeze(-1).tolist()
+        scores = torch.sigmoid(model(features_tensor)).squeeze(-1).tolist()
     if isinstance(scores, float):
         scores = [scores]
     return scores
@@ -67,7 +67,7 @@ def ai_schedule(jobs: List[Dict], model=None, model_path: str = None) -> Dict:
     for job, score in scored_jobs:
         jid, dl, dur = job["id"], job["deadline"], job["duration"]
         arrival = job.get("arrival_time", 0)
-        for end in range(min(dl, max_deadline), arrival + dur - 2, -1):
+        for end in range(min(dl - 1, max_deadline - 1), arrival + dur - 2, -1):
             start = end - dur + 1
             if start < arrival:
                 break

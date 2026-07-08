@@ -44,7 +44,7 @@ def trace_greedy(jobs: List[dict]) -> List[SimulationEvent]:
         arrival = job.get("arrival_time", 0)
 
         placed = False
-        for end_slot in range(min(deadline, max_slot), arrival + duration - 2, -1):
+        for end_slot in range(min(deadline - 1, max_slot - 1), arrival + duration - 2, -1):
             start_slot = end_slot - duration + 1
             if start_slot < arrival:
                 break

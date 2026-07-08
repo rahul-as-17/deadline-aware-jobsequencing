@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { LayoutDashboard, Cpu, GitCompare, BarChart3, Brain, Activity, BookOpen, CheckCircle, AlertTriangle, Info, Play, Zap, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Cpu, GitCompare, BarChart3, Brain, Activity, BookOpen, CheckCircle, AlertTriangle, Info, Sun, Moon } from 'lucide-react';
 import Dashboard from './pages/Dashboard.jsx';
 import Scheduler from './pages/Scheduler.jsx';
-import SimulationPage from './pages/SimulationPage.jsx';
-import DynamicSchedulerPage from './pages/DynamicSchedulerPage.jsx';
 import Compare from './pages/Compare.jsx';
 import Analytics from './pages/Analytics.jsx';
 import TrainAI from './pages/TrainAI.jsx';
@@ -14,8 +12,6 @@ import { modelStatus } from './api.js';
 const PAGES = [
   { id: 'dashboard',  label: 'Dashboard',    icon: LayoutDashboard },
   { id: 'scheduler',  label: 'Scheduler',    icon: Cpu },
-  { id: 'simulation', label: 'Simulation',   icon: Play },
-  { id: 'dynamic',     label: 'Dynamic Engine',icon: Zap },
   { id: 'compare',    label: 'Compare',      icon: GitCompare },
   { id: 'analytics',  label: 'Analytics',    icon: BarChart3 },
   { id: 'performance',label: 'Performance',  icon: Activity },
@@ -62,8 +58,6 @@ export default function App() {
   const ActivePage = {
     dashboard: Dashboard,
     scheduler: Scheduler,
-    simulation: SimulationPage,
-    dynamic: DynamicSchedulerPage,
     compare: Compare,
     analytics: Analytics,
     performance: PerformanceAnalysis,

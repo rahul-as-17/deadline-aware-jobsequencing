@@ -20,6 +20,7 @@ export const compareAll = (jobs) => api.post('/api/compare', { jobs }).then(r =>
 // Training
 export const trainModel  = (params) => api.post('/api/train', params).then(r => r.data);
 export const modelStatus = () => api.get('/api/model-status').then(r => r.data);
+export const trainingProgress = () => api.get('/api/training-progress').then(r => r.data);
 
 // Performance Analysis
 export const analyzeAccuracy      = (params) => api.post('/api/analysis/accuracy',          params).then(r => r.data);
