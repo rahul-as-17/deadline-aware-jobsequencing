@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { LayoutDashboard, Cpu, GitCompare, BarChart3, Brain, Activity, BookOpen, CheckCircle, AlertTriangle, Info, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Cpu, GitCompare, BarChart3, Brain, Activity, BookOpen, CheckCircle, AlertTriangle, Info, Play, Zap, Sun, Moon } from 'lucide-react';
 import Dashboard from './pages/Dashboard.jsx';
 import Scheduler from './pages/Scheduler.jsx';
+import SimulationPage from './pages/SimulationPage.jsx';
+import DynamicSchedulerPage from './pages/DynamicSchedulerPage.jsx';
 import Compare from './pages/Compare.jsx';
 import Analytics from './pages/Analytics.jsx';
 import TrainAI from './pages/TrainAI.jsx';
@@ -12,6 +14,8 @@ import { modelStatus } from './api.js';
 const PAGES = [
   { id: 'dashboard',  label: 'Dashboard',    icon: LayoutDashboard },
   { id: 'scheduler',  label: 'Scheduler',    icon: Cpu },
+  { id: 'simulation', label: 'Simulation',   icon: Play },
+  { id: 'dynamic',    label: 'Dynamic Engine',icon: Zap },
   { id: 'compare',    label: 'Compare',      icon: GitCompare },
   { id: 'analytics',  label: 'Analytics',    icon: BarChart3 },
   { id: 'performance',label: 'Performance',  icon: Activity },
@@ -54,16 +58,6 @@ export default function App() {
     setToasts(prev => [...prev, { id, msg, type }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
   }, []);
-
-  const ActivePage = {
-    dashboard: Dashboard,
-    scheduler: Scheduler,
-    compare: Compare,
-    analytics: Analytics,
-    performance: PerformanceAnalysis,
-    train: TrainAI,
-    about: AboutProject
-  }[page];
 
   return (
     <div className="app-layout">
@@ -113,7 +107,33 @@ export default function App() {
 
       {/* Main */}
       <main className="main-content">
-        <ActivePage addToast={addToast} modelReady={modelReady} onModelTrained={checkModel} />
+        <div style={{ display: page === 'dashboard' ? 'block' : 'none' }}>
+          <Dashboard addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'scheduler' ? 'block' : 'none' }}>
+          <Scheduler addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'simulation' ? 'block' : 'none' }}>
+          <SimulationPage addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'dynamic' ? 'block' : 'none' }}>
+          <DynamicSchedulerPage addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'compare' ? 'block' : 'none' }}>
+          <Compare addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'analytics' ? 'block' : 'none' }}>
+          <Analytics addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'performance' ? 'block' : 'none' }}>
+          <PerformanceAnalysis addToast={addToast} modelReady={modelReady} />
+        </div>
+        <div style={{ display: page === 'train' ? 'block' : 'none' }}>
+          <TrainAI addToast={addToast} modelReady={modelReady} onModelTrained={checkModel} />
+        </div>
+        <div style={{ display: page === 'about' ? 'block' : 'none' }}>
+          <AboutProject addToast={addToast} modelReady={modelReady} />
+        </div>
       </main>
 
       {/* Toasts */}

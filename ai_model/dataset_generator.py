@@ -45,7 +45,26 @@ def generate_random_jobs(n_jobs: int, max_deadline: int = 10, seed: int = None) 
         arrival = random.randint(0, max(0, max_deadline - duration))
         deadline = random.randint(arrival + duration, max_deadline + 2)
         profit = round(random.uniform(5.0, 100.0), 2)
-        penalty = round(random.uniform(1.0, profit * 0.8), 2)
+        
+        # Determine if this job is a "trap" (approx 30% chance)
+        trap_type = random.random()
+        if trap_type < 0.15:
+            # Penalty Trap: Massive penalty, decent profit
+            penalty = round(random.uniform(profit * 1.5, profit * 3.0), 2)
+        elif trap_type < 0.25:
+            # Panic Trap: Zero slack time, must be scheduled instantly
+            deadline = arrival + duration
+            penalty = round(random.uniform(profit * 0.5, profit * 1.5), 2)
+        elif trap_type < 0.30:
+            # Time Trap: Huge duration, blocks many jobs, low profit
+            duration = random.randint(max(1, max_deadline // 2), max_deadline)
+            arrival = random.randint(0, max(0, max_deadline - duration))
+            deadline = random.randint(arrival + duration, max_deadline + 2)
+            profit = round(random.uniform(5.0, 30.0), 2)
+            penalty = round(random.uniform(1.0, 10.0), 2)
+        else:
+            # Standard job
+            penalty = round(random.uniform(1.0, profit * 0.8), 2)
 
         jobs.append({
             "id": i,

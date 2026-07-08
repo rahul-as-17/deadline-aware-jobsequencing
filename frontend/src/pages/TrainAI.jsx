@@ -100,14 +100,14 @@ export default function TrainAI({ addToast, onModelTrained }) {
           </div>
         </div>
 
-        <button className="btn btn-emerald" onClick={handleTrain} disabled={loading}
+        <button className="btn btn-emerald" onClick={handleTrain} disabled={loading || (liveProgress && liveProgress.status !== 'idle')}
           style={{ width: '100%', justifyContent: 'center', padding: '0.75rem' }}>
-          {loading
-            ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> {progress}</>
+          {loading || (liveProgress && liveProgress.status !== 'idle')
+            ? <><span className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> {progress || (liveProgress && liveProgress.status !== 'idle' ? 'Training in background...' : '')}</>
             : <><Play size={14} /> Generate Data &amp; Train Model</>}
         </button>
 
-        {loading && liveProgress && liveProgress.status !== 'idle' && (
+        {liveProgress && liveProgress.status !== 'idle' && (
           <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
               <span>{liveProgress.status === 'generating_data' ? 'Generating Combinatorial Dataset...' : 'Training Neural Network...'}</span>

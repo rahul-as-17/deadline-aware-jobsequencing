@@ -3,7 +3,7 @@
   "min_jobs": 4,
   "max_jobs": 12,
   "max_deadline": 15,
-  "total_rows": 40378,
+  "total_rows": 39598,
   "features": [
     "deadline_norm",
     "duration_norm",
